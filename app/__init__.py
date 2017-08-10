@@ -48,18 +48,24 @@ versions = ['/api/v1']
 
 ###: Method 1: Blueprint 사용할 때
 # Import a module / component using its blueprint handler variable (mod_auth)
-from app.module01.controllers import module01
+from app.module01.urls import module01
+from app.auth.urls import auth
 
 # Register blueprint(s)
+#: 버전이 여러개일 경우, 버전을 하나씩 삽입할까? 아니면 그전처럼 배열로해서 다 돌아가게 할까
 # for version in versions:
 #     app.register_blueprint(module01, url_prefix='{}/module01'.format(version))
+
+app.register_blueprint(module01, url_prefix='/api/v1/module01')
+# app.register_blueprint(module01, url_prefix='/api/v2/module01')
+app.register_blueprint(auth, url_prefix='/api/v1/auth')
 
 ###: Method 2: add_url_rule 사용할 때
 # module 만들때마다 붙여줘라!
 import app.module02.urls as module02
 
 #: 등록된 url 확인하기
-# print(app.url_map)
+print(app.url_map)
 
 #####################################################################################
 
