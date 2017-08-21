@@ -15,11 +15,11 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 #: HOST
 if os.environ.get('PURPOSE') == 'PROD':
-    HOST='http://ciceron.me'
+    HOST=''
     #SESSION_COOKIE_DOMAIN=".ciceron.me"
     #SESSION_COOKIE_PATH="/"
 elif os.environ.get('PURPOSE') == 'DEV':
-    HOST='http://ciceron.xyz'
+    HOST=''
     #SESSION_COOKIE_DOMAIN=".ciceron.xyz"
     #SESSION_COOKIE_PATH="/"
 else:
@@ -30,13 +30,17 @@ else:
 SESSION_TYPE='redis'
 SESSION_COOKIE_NAME="CiceronCookie"
 PERMANENT_SESSION_LIFETIME=timedelta(days=15)
-SECRET_KEY='Yh1onQnWOJuc3OBQHhLFf5dZgogGlAnEJ83FacFv'
+SECRET_KEY=''
 
 #: Swagger
 SWAGGER = {
     'title': 'My flask API',
     'uiversion': 2
 }
+
+#: SQLAlchemy, DB
+SQLALCHEMY_DATABASE_URI='driver://user:pass@localhost/dbname'
+SQLALCHEMY_TRACK_MODIFICATIONS=True
 
 
 #: JSON으로 들어온 데이터들을 정렬해준다

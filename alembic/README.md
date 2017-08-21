@@ -12,7 +12,6 @@ alembic init `폴더 이름`
 ```shell
 sqlalchemy.url = driver://user:pass@localhost/dbname
 sqlalchemy.url = mysql+pymysql://user:pass@localhost/dbname
-
 ```
 driver는 사용하는 SQL + 라이브러리로 설정해주면 됩니다.
 

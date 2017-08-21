@@ -13,7 +13,10 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-target_metadata = None
+import os, sys
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..'))
+from app import db
+target_metadata = db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

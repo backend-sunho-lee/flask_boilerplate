@@ -30,15 +30,15 @@ cors = CORS(app, resources={r"/*": {"origins": "*", "supports_credentials": "tru
 
 # Import SQLAlchemy
 # from flask.ext.sqlalchemy import SQLAlchemy
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 # Define the database object which is imported
 # by modules and controllers
-# db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 # Build the database:
 # This will create the database file using SQLAlchemy
-# db.create_all()
+db.create_all()
 
 
 #################################### 모듈 연결시키기 ####################################
