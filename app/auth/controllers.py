@@ -17,31 +17,44 @@ twitter = oauth.remote_app('twitter',
 )
 
 @twitter.tokengetter
-def get_twitter_token(token=None):
-    return session.get('twitter_token')
+# def get_twitter_token(token=None):
+#     return session.get('twitter_token')
+def get_twitter_token():
+    if 'twitter_oauth' in session:
+        resp = session['twitter_oauth']
+        return resp['oauth_token'], resp['oauth_token_secret']
 
 def login():
-    # return twitter.authorize(callback=url_for('auth.oauth_authorized',
-    #     next=request.args.get('next') or request.referrer or None))
-    return twitter.authorize(callback=url_for('auth.oauth_authorized', _external=True))
+    return twitter.authorize(callback=url_for('auth.twitter_authorized',
+        next=request.args.get('next') or request.referrer or None))
+    # return twitter.authorize(callback=url_for('auth.twitter_authorized', _external=True))
 
-def oauth_authorized():
-    next_url = request.args.get('next') or url_for('index')
+def twitter_authorized():
+    # next_url = request.args.get('next') or url_for('index')
+    # resp = twitter.authorized_response()
+    # if resp is None:
+    #     flash(u'You denied the request to sign in.')
+    #     return redirect(next_url)
+    #
+    # session['twitter_token'] = (
+    #     resp['oauth_token'],
+    #     resp['oauth_token_secret']
+    # )
+    # session['twitter_user'] = resp['screen_name']
+
     resp = twitter.authorized_response()
     if resp is None:
-        flash(u'You denied the request to sign in.')
-        return redirect(next_url)
+        flash('You denied the request to sign in twitter.')
+    else:
+        session['twitter_oauth'] = resp
 
-    session['twitter_token'] = (
-        resp['oauth_token'],
-        resp['oauth_token_secret']
-    )
-    session['twitter_user'] = resp['screen_name']
-
-    flash('You were signed in as %s' % resp['screen_name'])
+    # flash('You were signed in as %s' % resp['screen_name'])
     # return redirect(next_url)
-    return jsonify('Twitter Login Success!')
+    return jsonify(session=dict(session))
 
 def logout():
     session.pop('twitter_oauth', None)
-    return redirect(url_for('auth.index'))
+    # session.pop('twitter_token', None)
+    # session.pop('twitter_user', None)
+    # return redirect(url_for('auth.index'))
+    return jsonify(session=dict(session))
