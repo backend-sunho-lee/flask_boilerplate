@@ -4,13 +4,14 @@ from flask_cors import CORS
 from flask_session import Session
 from flask_caching import Cache
 from flasgger import Swagger
+from flask_sqlalchemy import SQLAlchemy
 
 # Define the WSGI application object
 app = Flask(__name__)
 
 #: Configurations
-import configs
-app.config.from_object(configs)
+import config
+app.config.from_object(config)
 
 #: Swagger
 Swagger(app)
@@ -23,14 +24,6 @@ Session(app)
 
 #: Flask-CORS
 cors = CORS(app, resources={r"/*": {"origins": "*", "supports_credentials": "true"}})
-
-
-###: DB 연결
-# 저는 configs에 설정해서 바로 연결해서 쓸 수 있도록 했습니다.
-
-# Import SQLAlchemy
-# from flask.ext.sqlalchemy import SQLAlchemy
-from flask_sqlalchemy import SQLAlchemy
 
 # Define the database object which is imported
 # by modules and controllers

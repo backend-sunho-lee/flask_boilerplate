@@ -49,9 +49,14 @@ MAX_CONTENT_LENGTH=4 * 1024 * 1024
 UPLOAD_FOLDER_RESULT="translate_result"
 
 
+#: Twitter
+TWITTER_CONSUMER_KEY=''
+TWITTER_CONSUMER_SECRET=''
+
 #: Facebook
-FACEBOOK_APP_ID=256525961180911
-FACEBOOK_APP_SECRET='e382ac48932308c15641803022feca13'
+FACEBOOK_APP_ID='number'
+FACEBOOK_APP_SECRET=''
+
 
 # Application threads. A common general assumption is
 # using 2 per available processor cores - to handle

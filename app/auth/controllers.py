@@ -1,7 +1,47 @@
-'''
-auth 관련. 로그인, 로그아웃
-local, twitter, google 필요할 예정
-'''
+from flask import url_for, request, g, session, flash, render_template, redirect, jsonify, make_response, json
+from flask_oauthlib.client import OAuth
+from app import app
+
+oauth = OAuth()
 
 def index():
     return 'Auth API'
+
+twitter = oauth.remote_app('twitter',
+    base_url='https://api.twitter.com/1.1/',
+    request_token_url='https://api.twitter.com/oauth/request_token',
+    access_token_url='https://api.twitter.com/oauth/access_token',
+    authorize_url='https://api.twitter.com/oauth/authorize',
+    consumer_key=app.config['TWITTER_CONSUMER_KEY'],
+    consumer_secret=app.config['TWITTER_CONSUMER_SECRET']
+)
+
+@twitter.tokengetter
+def get_twitter_token(token=None):
+    return session.get('twitter_token')
+
+def login():
+    # return twitter.authorize(callback=url_for('auth.oauth_authorized',
+    #     next=request.args.get('next') or request.referrer or None))
+    return twitter.authorize(callback=url_for('auth.oauth_authorized', _external=True))
+
+def oauth_authorized():
+    next_url = request.args.get('next') or url_for('index')
+    resp = twitter.authorized_response()
+    if resp is None:
+        flash(u'You denied the request to sign in.')
+        return redirect(next_url)
+
+    session['twitter_token'] = (
+        resp['oauth_token'],
+        resp['oauth_token_secret']
+    )
+    session['twitter_user'] = resp['screen_name']
+
+    flash('You were signed in as %s' % resp['screen_name'])
+    # return redirect(next_url)
+    return jsonify('Twitter Login Success!')
+
+def logout():
+    session.pop('twitter_oauth', None)
+    return redirect(url_for('auth.index'))

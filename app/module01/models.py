@@ -1,5 +1,5 @@
 from sqlalchemy import Table
-from configs import db
+from app import db
 
 # conn = db.conn
 # meta = db.Base.metadata
