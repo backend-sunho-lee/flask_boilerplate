@@ -24,7 +24,7 @@ def get_twitter_token():
         resp = session['twitter_oauth']
         return resp['oauth_token'], resp['oauth_token_secret']
 
-def login():
+def twitter_login():
     return twitter.authorize(callback=url_for('auth.twitter_authorized',
         next=request.args.get('next') or request.referrer or None))
     # return twitter.authorize(callback=url_for('auth.twitter_authorized', _external=True))
@@ -52,9 +52,13 @@ def twitter_authorized():
     # return redirect(next_url)
     return jsonify(session=dict(session))
 
-def logout():
+def twitter_logout():
     session.pop('twitter_oauth', None)
     # session.pop('twitter_token', None)
     # session.pop('twitter_user', None)
     # return redirect(url_for('auth.index'))
     return jsonify(session=dict(session))
+
+
+def login():
+    pass

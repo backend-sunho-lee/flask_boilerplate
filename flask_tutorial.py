@@ -42,8 +42,11 @@ def tutorial2():
     쿼리스트링은 데이터타입이 string이기 때문에 int를 받으려면 int(qs)로 변환시켜주어야한다.
     '''
     # get()함수를 쓰는 이유: 만약 요청에 포함되지 않았을 때 None으로 들어오게하여 에러 처리를 보다 쉽게 할 수 있다.
-    query_string = request.args.get('qs', None)
-    return make_response(jsonify(query_string=query_string), 200)
+    #query_string = request.args.get('qs', None)
+
+    # 특정 파라미터가 아닌 입력된 모든 파라미터를 받고 싶은 경우
+    query_string = request.args
+    return make_response(jsonify(query_string), 200)
 
 
 #: 폼 데이터 받기

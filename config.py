@@ -39,7 +39,8 @@ SWAGGER = {
 }
 
 #: SQLAlchemy, DB
-SQLALCHEMY_DATABASE_URI='driver://user:pass@localhost/dbname'
+SQLALCHEMY_DATABASE_URI='mysql+pymysql://baogao:ciceron8888@baogao.co/sunny'
+# SQLALCHEMY_DATABASE_URI='driver://user:pass@localhost/dbname'
 SQLALCHEMY_TRACK_MODIFICATIONS=True
 
 
@@ -50,8 +51,8 @@ UPLOAD_FOLDER_RESULT="translate_result"
 
 
 #: Twitter
-TWITTER_CONSUMER_KEY=''
-TWITTER_CONSUMER_SECRET=''
+TWITTER_CONSUMER_KEY='vWcnCZ3lVnkJDblLKQh1sKZZ9'
+TWITTER_CONSUMER_SECRET='RVUyIukJNQnBmXNQdGcMX1Z4BbQvPiIo2hnuCmggir2vrQ29Te'
 
 #: Facebook
 FACEBOOK_APP_ID='number'
