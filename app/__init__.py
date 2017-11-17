@@ -53,7 +53,7 @@ app.register_blueprint(module01, url_prefix='/api/v1/module01')
 # app.register_blueprint(module01, url_prefix='/api/v2/module01')
 app.register_blueprint(auth, url_prefix='/api/v1/auth')
 
-###: Method 2: add_url_rule 사용할 때
+###: Method 2: add_url_rule 사용할 때, Blueprint 안 쓸 때
 # module 만들때마다 붙여줘라!
 import app.module02.urls as module02
 
