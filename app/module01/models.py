@@ -1,6 +1,22 @@
-from sqlalchemy import Table
+from sqlalchemy import Table, MetaData
 from app import db
 
+conn = db.engine.connect()
+meta = MetaData(bind=db.engine)
+
+projects = Table('projects', meta, autoload=True)
+conn.execute(projects.insert(), name='test')
+
+a = projects.select(projects.c.name == 'test').execute()
+for aa in a: print(aa)
+
+a = projects.select(projects.c.name == 'test').execute().first()
+print(a)
+
+
+# from sqlalchemy import Table
+# from app import db
+#
 # conn = db.conn
 # meta = db.Base.metadata
 #
@@ -10,10 +26,3 @@ from app import db
 # print(result)
 #
 # conn.close()
-
-
-def signup():
-    pass
-
-def checkInfo():
-    pass
