@@ -1,8 +1,6 @@
 from flask import jsonify, request
 import random
 
-def index():
-    return 'Module02 API'
 
 def language_awesomeness(language):
     """

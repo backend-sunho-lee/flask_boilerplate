@@ -13,10 +13,21 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-import os, sys
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..'))
-from app import db
-target_metadata = db.metadata
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+# target_metadata = None
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.ext.declarative import declarative_base
+
+#: set schema to copy(already created schema)
+url = 'driver://user:pass@localhost/dbname'
+
+engine = create_engine(url)
+conn = engine.connect()
+Base = declarative_base(metadata=MetaData(bind=engine))
+Base.metadata.reflect(engine)
+
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
