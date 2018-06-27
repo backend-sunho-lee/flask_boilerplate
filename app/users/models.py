@@ -20,10 +20,7 @@ BUCKET_FOLDER = ''
 
 def select_user_thumbnail(uid):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT thumbnail_s3key FROM `marocat v1.1`.users WHERE id=:uid;"""), uid=uid).fetchone()
-    # a = re.split('.', s3key)
-    # mimetype = a[-1]
-    # print(a)
+    res = conn.execute(text("""SELECT thumbnail_s3key FROM users WHERE id=:uid;"""), uid=uid).fetchone()
 
     obj = S3.get_object(
         Bucket=BUCKET_NAME,
@@ -34,7 +31,7 @@ def select_user_thumbnail(uid):
 
 def select_user_thumbnail_original(uid):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT picture_s3key FROM `marocat v1.1`.users WHERE id=:uid;"""), uid=uid).fetchone()
+    res = conn.execute(text("""SELECT picture_s3key FROM users WHERE id=:uid;"""), uid=uid).fetchone()
 
     obj = S3.get_object(
         Bucket=BUCKET_NAME,
@@ -50,22 +47,14 @@ def update_password(email, new_pwd):
     u = Table('users', meta, autoload=True)
 
     #: 현재 로그인한 사용자의 id로 검색한 패스워드 + 사용자가 입력한 현재 비밀번호가 일치하는지 확인
-    # res = conn.execute(text("""SELECT password = SHA2(:pwd, 512) as res FROM users WHERE email = :email""")
-    #                    , pwd=old_pwd, email=email).fetchone()
 
     try:
-        hash_new_pwd = common.encrypt_pwd(new_pwd)
+        hash_new_pwd = ''
         res = conn.execute(u.update().where(u.c.email == email), password=hash_new_pwd, update_time=datetime.utcnow())
-
-        # if res.rowcount != 1:
-        #     print('update_password', res.rowcount)
-        #     trans.rollback()
-        #     return 0
 
         trans.commit()
         return 1
     except exc.IntegrityError:
-        print('update_password, IntegrityError')
         trans.rollback()
         return 0
     except:
@@ -85,11 +74,6 @@ def update_nickname(email, nickname):
     try:
         res = conn.execute(u.update().where(u.c.email == email), name=nickname, update_time=datetime.utcnow())
 
-        # if res.rowcount != 1:
-        #     print('update_nickname', res.rowcount)
-        #     trans.rollback()
-        #     return False
-
         trans.commit()
         return True
     except:
@@ -108,7 +92,7 @@ def update_picture(email, picture):
         pic = copy.deepcopy(picture.read())
 
         #: 업로드할 파일 이름짓기
-        t = common.create_token(email, size=7)
+        t = ''
         udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
         _pname = t + '_' + udate
         mimetype = re.split('/', picture.content_type)
@@ -142,7 +126,6 @@ def update_picture(email, picture):
         #     }
         # )
     except:
-        print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
         return 2, None
 
@@ -150,12 +133,7 @@ def update_picture(email, picture):
         res = conn.execute(u.update().where(u.c.email == email), picture_s3key=pname, thumbnail_s3key=tname
                            , update_time=datetime.utcnow())
 
-        # if res.rowcount != 1:
-        #     print('update_nickname', res.rowcount)
-        #     trans.rollback()
-        #     return 0
-
-        user_picture = '/api/v1/users/me/picture/' + tname
+        user_picture = tname
 
         trans.commit()
         return 1, user_picture
@@ -177,14 +155,12 @@ def delete_user(uid):
         #: 사용자 삭제
         res = conn.execute(u.update(u.c.id == uid), is_deleted=True, update_time=datetime.utcnow())
         if res.rowcount != 1:
-            print('Wrong (delete/update user)')
             trans.rollback()
             return False
 
         trans.commit()
         return True
     except:
-        print('Wrong (delete_user)')
         traceback.print_exc()
         trans.rollback()
         return False

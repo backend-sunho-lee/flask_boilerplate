@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, g, redirect, abort, make_response, jsonify
+from flask import Flask, make_response, jsonify, render_template
 from flask_session import Session
 from flask_cors import CORS
 from flask_caching import Cache
 from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
 from flask_sslify import SSLify
+import os
 
 # Define the WSGI application object
 app = Flask(__name__, static_url_path='/static')
 
 #: Configurations
-import config
-app.config.from_object(config)
+import configs
+
+if os.environ.get('PURPOSE') == 'PROD':
+    app.config.from_object(configs.ProdConfig)
+elif os.environ.get('PURPOSE') == 'DEV':
+    app.config.from_object(configs.DevConfig)
+else:
+    app.config.from_object(configs.Config)
 
 #: Swagger
-#Swagger(app)
+Swagger(app)
 
 # Flask-Cache
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -56,7 +63,7 @@ db.create_all()
 # for version in versions:
 #     app.register_blueprint(module01, url_prefix='{}/module01'.format(version))
 
-from app.ex_swagger.urls import swag
+from app.swagger_example.urls import swag
 app.register_blueprint(swag, url_prefix='/api/v1/swag')
 
 from app.auth.urls import auth
@@ -67,7 +74,7 @@ app.register_blueprint(users, url_prefix='/api/v1/users')
 
 # ##: Method 2: add_url_rule 사용할 때, Blueprint 안 쓸 때
 # module 만들때마다 붙여줘라!
-import app.module02.urls as module02
+# import app.module01.urls as module01
 
 #: 등록된 url 확인하기
 print(app.url_map)
@@ -83,15 +90,7 @@ def before_request():
     """
     모든 API 실행 전 실행하는 부분
     """
-    if request.url.startswith('http://'):
-        url = request.url.replace('http://', 'https://', 1)
-        code = 301
-        return redirect(url, code=code)
-    
-    if '/api' in request.environ['PATH_INFO']:
-        is_ok = common.ddos_check_and_write_log()
-        if is_ok is False:
-            return make_response(jsonify(result='Blocked connection'), 503)
+    pass
 
 
 @app.teardown_request
@@ -103,22 +102,35 @@ def teardown_request(exception):
 
 
 # Sample HTTP error handling
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify(result='존재하지 않는 페이지입니다'), 404)
-
-
 @app.errorhandler(401)
-def not_unauthorized(error):
-    return make_response(jsonify(result='인증되지 않음'), 401)
+def unauthorized(error):
+    return make_response(jsonify(code=1000, message="Unauthorized",
+                                 description="The server could not verify that you are authorized to access the URL requested. " +
+                                 "You either supplied the wrong credentials (e.g. a bad password), " +
+                                 "or your browser doesn't understand how to supply the credentials required."), 401)
 
 
 @app.errorhandler(403)
 def forbidden(error):
-    # return abort(403)
-    return make_response(jsonify(result='접근 금지!'), 403)
+    return make_response(jsonify(code=3000, message="Forbidden",
+                                 description="You don't have the permission to access the requested resource." +
+                                 "It is either read-protected or not readable by the server."), 403)
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify(code=4000, message="Not Found",
+                                 description="The requested URL was not found on the server. " +
+                                             "If you entered the URL manually please check your spelling and try again."), 404)
+
+
+# The request was well-formed but was unable to be followed due to semantic errors.
+@app.errorhandler(422)
+def unprocessable_entity(error):
+    return make_response(jsonify(code=2200, message="Unprocessable Entity",
+                                 description="커버하지 못한 에러다아아아아아"), 422)
 
 
 @app.route('/')
 def hello_world():
-    return redirect('/static/index.html')
+    return render_template('index.html')

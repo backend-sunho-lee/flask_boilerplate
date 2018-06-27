@@ -1,5 +1,5 @@
 from flask import Blueprint
-import app.ex_swagger.controllers as ctrl
+import app.swagger_example.controllers as ctrl
 
 swag = Blueprint('swag', __name__)
 
